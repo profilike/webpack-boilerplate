@@ -2,8 +2,13 @@ const path = require('path')
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const cleanWebpackPlugin = require("clean-webpack-plugin");
-const ManifestPlugin = require("webpack-manifest-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin")
 const dev = process.env.NODE_ENV === "dev"
+
+const PATH = {
+    source: path.join(__dirname, 'src'),
+    build: path.join(__dirname, 'dist'),
+}
 
 /** CSS CONFIG  */
 
@@ -33,37 +38,37 @@ if(!dev) {
 
 let config = {
     entry: {
-        app: ['./src/css/app.scss', './src/js/app.js']
+        app: [PATH.source + '/app.scss', PATH.source + '/app.js']
     },
     watch: dev,
     output: {
-        path: path.resolve('./public/src'),
-        filename: dev ? '[name].js' : '[name].[chunkhash:8].js',
-        publicPath: '/src/'
-    },
-    resolve: {
-        alias: {
-            '@css': path.resolve('./src/css/'),
-            '@': path.resolve('./src/js/')
-        }
+        path: PATH.build,
+        filename: '[name].js'
     },
     devtool: dev ? "cheap-module-eval-source-map" : false,
     devServer: {
-        overlay: true,
-        contentBase: path.resolve('./public')     
+        stats: 'errors-only',
+        contentBase: PATH.build 
     },
     module: {
         rules: [
-            {
-                enforce: 'pre',
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: ['eslint-loader']
-            },
+            // {
+            //     enforce: 'pre',
+            //     test: /\.js$/,
+            //     exclude: /node_modules/,
+            //     use: ['eslint-loader']
+            // },
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 use: ['babel-loader']
+            },
+            {
+                test: /\.pug$/,
+                loader: 'pug-loader',
+                options: {
+                    pretty: true
+                }
             },
             {
                 test: /\.css$/,
@@ -90,7 +95,7 @@ let config = {
                     loader: 'url-loader',                
                     options: {
                       limit: 8192,
-                      name: '[name].[hash:7].[ext]',
+                      name: '[name].[ext]',
                       outputPath: 'images/'
                     }
                   },
@@ -106,8 +111,12 @@ let config = {
     },
     plugins: [
         new ExtractTextPlugin({
-            filename: dev ? '[name].css' :'[name].[contenthash:8].css',
+            filename: '[name].css',
             disable: dev
+        }),
+        new HtmlWebpackPlugin({
+            filename: 'index.html',
+            template: PATH.source + '/index.pug'
         })
     ]
 }
@@ -118,12 +127,11 @@ if(!dev){
     config.plugins.push(new UglifyJSPlugin({
         sourceMap: true
     }))
-    config.plugins.push(new ManifestPlugin()),
-    config.plugins.push(new cleanWebpackPlugin(['dist'], {
-        root: path.resolve('./'),
-        verbose: true,
-        dry: false
-    })) 
+    // config.plugins.push(new cleanWebpackPlugin(['dist'], {
+    //     root: path.resolve('./'),
+    //     verbose: true,
+    //     dry: false
+    // })) 
 }
 
 module.exports = config
