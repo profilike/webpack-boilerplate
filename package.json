@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server",
-    "dev": "cross-env NODE_ENV=dev&&npm run start",
-    "prod": "cross-env NODE_ENV=prod&&webpack",
-    "serv": "static dist"
+    "dev": "cross-env NODE_ENV=dev npm run start",
+    "prod": "cross-env NODE_ENV=prod webpack",
+    "server": "static public"
   },
   "keywords": [],
   "author": "profilike",
@@ -17,7 +17,6 @@
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
-    "clean-webpack-plugin": "^0.1.17",
     "cross-env": "^5.1.3",
     "css-loader": "^0.28.7",
     "eslint": "^4.14.0",
@@ -42,7 +41,6 @@
     "url-loader": "^0.6.2",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.7",
-    "webpack-manifest-plugin": "^1.3.2",
     "webpack-merge": "^4.1.1"
   },
   "dependencies": {

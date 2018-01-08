@@ -9,7 +9,7 @@ module.exports = function(dev){
                         loader: 'url-loader',                
                         options: {
                           limit: 8192,
-                          name: '[name].[ext]',
+                          name: '[name].[ext]?[hash]',
                           outputPath: 'images/'
                         }
                       },

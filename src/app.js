@@ -4,4 +4,4 @@ let menu = createMenu(['Main','About Us','Portfolio'], 'list-group');
 let rootEl = document.getElementById('app-root');
 rootEl.appendChild(menu)
 
-console.log(process.env)
+console.log(NODE_ENV)

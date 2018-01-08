@@ -1,38 +1,48 @@
 const path = require('path')
 const webpack = require('webpack')
+const merge = require('webpack-merge')
 
 const ExtractTextPlugin = require("extract-text-webpack-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
-const merge = require('webpack-merge')
-const pug = require('./webpack/pug')
 
+const pug = require('./webpack/pug')
 const cssLoaders = require('./webpack/cssExtract')
 const imageLoaders = require('./webpack/image')
 const uglifyJs = require('./webpack/uglify')
 
 const NODE_ENV = process.env.NODE_ENV || 'dev'; // or prod
-const dev = (NODE_ENV === 'dev');
+const isDev = (NODE_ENV === 'dev');
 
 const PATH = {
     source: path.join(__dirname, 'src'),
-    build: path.join(__dirname, 'dist'),
+    build: path.join(__dirname, 'public'),
 }
+
+// Check deprecation modules
+//process.traceDeprecation = true
 
 const common = merge([
     {
     entry: {
         app: [PATH.source + '/app.scss', PATH.source + '/app.js']
     },
-    watch: dev,
+    watch: isDev,
     output: {
         path: PATH.build,
         filename: 'js/[name].js'
     },
     devServer: {
         stats: 'errors-only',
-        port: 9000
+        port: 9000,
+        hot: true,
+        inline: true,
+        contentBase: [PATH.source + '/index.pug'],
+        watchContentBase: true
     },
-    devtool: dev ? "cheap-module-eval-source-map" : false,
+    devtool: isDev ? "cheap-module-eval-source-map" : false,
+    resolve: {
+        extensions: ['.js']
+    },
     module: {
         rules: [
             {
@@ -48,9 +58,10 @@ const common = merge([
     },
 
     plugins: [
+        
         new ExtractTextPlugin({
             filename: './css/[name].css',
-            disable: dev
+            disable: isDev
         }),
         new HtmlWebpackPlugin({
             filename: 'index.html',
@@ -62,12 +73,13 @@ const common = merge([
         }),
         new webpack.DefinePlugin({
             NODE_ENV: JSON.stringify(NODE_ENV)
-        })
+        }),
+        new webpack.HotModuleReplacementPlugin()
         
-    ]
+        ]
     },
-    cssLoaders(dev), // false for production
-    imageLoaders(dev), // false for production
+    cssLoaders(isDev),
+    imageLoaders(isDev),
     pug()
 
 ])
