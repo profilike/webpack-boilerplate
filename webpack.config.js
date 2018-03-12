@@ -9,6 +9,7 @@ const pug = require('./webpack/pug')
 const cssLoaders = require('./webpack/cssExtract')
 const imageLoaders = require('./webpack/image')
 const uglifyJs = require('./webpack/uglify')
+const eslint = require('./webpack/eslint');
 
 const NODE_ENV = process.env.NODE_ENV || 'dev'; // or prod
 const isDev = (NODE_ENV === 'dev');
@@ -24,7 +25,7 @@ const PATH = {
 const common = merge([
     {
     entry: {
-        app: [PATH.source + '/app.scss', PATH.source + '/app.js']
+        app: ['babel-polyfill', PATH.source + '/app.scss', PATH.source + '/app.js']
     },
     watch: isDev,
     output: {
@@ -78,6 +79,7 @@ const common = merge([
         
         ]
     },
+    //eslint(),
     cssLoaders(isDev),
     imageLoaders(isDev),
     pug()
